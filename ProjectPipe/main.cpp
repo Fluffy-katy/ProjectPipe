@@ -126,17 +126,27 @@ void EditCompressorStationWorkshops(CompressorStation& cs) {
 
 //СОХРАНИТЬ/ЗАГРУЗИТЬ
 void SavePipe(ofstream& fout, const Pipe& p) {
-    fout << p.name << endl;
-    fout << p.length << endl;
-    fout << p.diameter << endl;
-    fout << p.in_repair << endl;
+    string Marker = "pipe";
+    if (p.name == "None") fout << Marker << endl;
+    else
+    {
+        fout << p.name << endl;
+        fout << p.length << endl;
+        fout << p.diameter << endl;
+        fout << p.in_repair << endl;
+    }
 }
 
 void SaveCS(ofstream& fout, const CompressorStation& cs) {
-    fout << cs.name << endl;
-    fout << cs.number_of_workshops << endl;
-    fout << cs.active_workshops << endl;
-    fout << cs.efficiency << endl;
+    string Marker = "CS";
+    if (cs.name == "None") fout << Marker << endl;
+    else
+    {
+        fout << cs.name << endl;
+        fout << cs.number_of_workshops << endl;
+        fout << cs.active_workshops << endl;
+        fout << cs.efficiency << endl;
+    }
 }
 
 bool LoadPipe(ifstream& fin, Pipe& p) {
