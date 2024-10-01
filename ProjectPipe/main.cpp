@@ -80,7 +80,7 @@ CompressorStation InputCompressorStation() {
     CompressorStation cs;
 
     cout << "Enter compressor station name: ";
-    cin >> ws;
+    
     getline(cin, cs.name);
 
     cout << "Enter total number of workshops: ";
@@ -125,26 +125,31 @@ void EditCompressorStationWorkshops(CompressorStation& cs) {
 }
 
 //СОХРАНИТЬ/ЗАГРУЗИТЬ
-void SaveData(ofstream& fout, const Pipe& p, const CompressorStation& cs) {
+void SavePipe(ofstream& fout, const Pipe& p) {
     fout << p.name << endl;
     fout << p.length << endl;
     fout << p.diameter << endl;
     fout << p.in_repair << endl;
+}
 
+void SaveCS(ofstream& fout, const CompressorStation& cs) {
     fout << cs.name << endl;
     fout << cs.number_of_workshops << endl;
     fout << cs.active_workshops << endl;
     fout << cs.efficiency << endl;
 }
 
-bool LoadData(ifstream& fin, Pipe& p, CompressorStation& cs) {
-    if (!(getline(fin, p.name))) return false;
+bool LoadPipe(ifstream& fin, Pipe& p) {
+    if (!(getline(fin >> ws, p.name))) return false;
     if (!(fin >> p.length)) return false;
     if (!(fin >> p.diameter)) return false;
     if (!(fin >> p.in_repair)) return false;
     fin.ignore(10000, '\n');
 
-    if (!(getline(fin, cs.name))) return false;
+    return fin.good();
+}
+bool LoadCS(ifstream & fin, CompressorStation & cs) {
+    if (!(getline(fin >> ws, cs.name))) return false;
     if (!(fin >> cs.number_of_workshops)) return false;
     if (!(fin >> cs.active_workshops)) return false;
     if (!(fin >> cs.efficiency)) return false;
@@ -228,7 +233,8 @@ int main() {
         case SAVE_DATA: {
             ofstream fout("data.txt");
             if (fout.is_open()) {
-                SaveData(fout, p, cs);
+                SavePipe(fout, p);
+                SaveCS(fout, cs);
                 fout.close();
                 cout << "Data successfully saved\n\n";
             }
@@ -241,7 +247,7 @@ int main() {
         case LOAD_DATA: {
             ifstream fin("data.txt");
             if (fin.is_open()) {
-                if (LoadData(fin, p, cs)) {
+                if (LoadPipe(fin, p) || LoadCS(fin, cs)) {
                     fin.close();
                     cout << "Data successfully loaded\n\n";
                 }
