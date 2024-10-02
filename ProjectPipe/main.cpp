@@ -25,21 +25,22 @@ struct CompressorStation {
 };
 
 void PrintMenu() {
-    cout << "1. Input pipe data\n"
-        << "2. Input compressor station data\n"
-        << "3. Display information\n"
+    cout << "1. Input pipe\n"
+        << "2. Input cs's\n"
+        << "3. Show information\n"
         << "4. Change pipe repair state\n"
-        << "5. Edit number of operating workshops\n"
-        << "6. Save data to file\n"
+        << "5. Edit number of active workshops\n"
+        << "6. Save data\n"
         << "7. Load data from file\n"
         << "0. Exit\n"
         << "Select an option: ";
 }
-//ТРУБА
-Pipe InputPipe() { //функция возвращает struct Pipe, p позволяет работать с отдельными значениям из Pipe
-    Pipe p;// объявление объекта структуры Pipe
+
+//Pipe
+Pipe InputPipe() { 
+    Pipe p;
     cout << "Enter pipe name: ";
-    cin >> ws; //убирает все пробельные символы перед чтением строки
+    cin >> ws; 
     getline(cin, p.name);
 
     cout << "Enter pipe length: ";
@@ -75,13 +76,13 @@ void TogglePipeRepairState(Pipe& p) {
     p.in_repair = !p.in_repair;
     cout << "Pipe repair state successfully changed\n\n";
 }
-//КС
+//CS
 CompressorStation InputCompressorStation() {
     CompressorStation cs;
 
     cout << "Enter compressor station name: ";
-    
-    getline(cin, cs.name);
+
+    getline(cin >> ws, cs.name);
 
     cout << "Enter total number of workshops: ";
     while (!(cin >> cs.number_of_workshops) || cs.number_of_workshops <= 0) {
@@ -124,7 +125,7 @@ void EditCompressorStationWorkshops(CompressorStation& cs) {
     cout << "Number of operating workshops successfully updated\n\n";
 }
 
-//СОХРАНИТЬ/ЗАГРУЗИТЬ
+//save load
 void SavePipe(ofstream& fout, const Pipe& p) {
     string Marker = "pipe";
     if (p.name == "None") fout << Marker << endl;
@@ -149,35 +150,36 @@ void SaveCS(ofstream& fout, const CompressorStation& cs) {
     }
 }
 
-bool LoadPipe(ifstream& fin, Pipe& p) {
-    if (!(getline(fin >> ws, p.name))) return false;
-    if (!(fin >> p.length)) return false;
-    if (!(fin >> p.diameter)) return false;
-    if (!(fin >> p.in_repair)) return false;
-    fin.ignore(10000, '\n');
+Pipe LoadPipe(ifstream& fin, Pipe& p) {
+    string Marker;
+    getline(fin >> ws, Marker);
+    if (Marker == "pipe") return p = { "None", 0, 0, 0 };
+    else {
+        p.name = Marker;
+        fin >> p.length;
+        fin >> p.diameter;
+        fin >> p.in_repair;
+        return p;
 
-    return fin.good();
-}
-bool LoadCS(ifstream & fin, CompressorStation & cs) {
-    if (!(getline(fin >> ws, cs.name))) return false;
-    if (!(fin >> cs.number_of_workshops)) return false;
-    if (!(fin >> cs.active_workshops)) return false;
-    if (!(fin >> cs.efficiency)) return false;
-    return true;
+    }
+
 }
 
-// перечисление(enum) MenuOption; содержит варианты меню, для простого понимания какой вариант выбран в switch-case
-// /learn.microsoft.com/ru-ru/cpp/cpp/enumerations-cpp?view=msvc-170
-enum MenuOption {
-    EXIT = 0,
-    INPUT_PIPE = 1,
-    INPUT_COMPRESSOR_STATION = 2,
-    PRINT_INFO = 3,
-    TOGGLE_PIPE_REPAIR_STATE = 4,
-    EDIT_COMPRESSOR_STATION_WORKSHOPS = 5,
-    SAVE_DATA = 6,
-    LOAD_DATA = 7
-};
+CompressorStation LoadCS(ifstream& fin, CompressorStation& cs) {
+    string Marker;
+    getline(fin >> ws, Marker);
+    if (Marker == "CS") return cs = { "None", 0, 0, 0 };
+    else {
+        cs.name = Marker;
+        fin >> cs.number_of_workshops;
+        fin >> cs.active_workshops;
+        fin >> cs.efficiency;
+        return cs;
+
+    }
+}
+
+
 
 int main() {
     Pipe p;
@@ -185,29 +187,23 @@ int main() {
 
     while (true) {
         PrintMenu();
-        int tempSelection;
-        while (!(cin >> tempSelection)) { //если ввод CIN это int FAILS то это будет TRUE и функция заработает
+        int selection;
+        while (!(cin >> selection)) {
             ClearCinBuffer();
             PrintMenu();
         }
-        MenuOption selection = static_cast<MenuOption>(tempSelection); //https://riptutorial.com/cplusplus/example/18751/enum-conversions
-        //преобразует значение переменной tempSelection (которое имеет тип int) 
-        // в значение перечисления MenuOption.
-        //позволяет далее в программе использовать перечисление (enum),
-        //а не просто числа, что делает код более понятным
-        cout << "\n";
 
 
         switch (selection) {
-        case INPUT_PIPE: //как раз таки введеный int уже стал enum
+        case 1: 
             p = InputPipe();
             break;
 
-        case INPUT_COMPRESSOR_STATION:
+        case 2:
             cs = InputCompressorStation();
             break;
 
-        case PRINT_INFO:
+        case 3:
             if (p.name == "None") {
                 cout << "No pipe data available\n\n";
             }
@@ -222,7 +218,7 @@ int main() {
             }
             break;
 
-        case TOGGLE_PIPE_REPAIR_STATE:
+        case 4:
             if (p.name != "None") {
                 TogglePipeRepairState(p);
             }
@@ -231,7 +227,7 @@ int main() {
             }
             break;
 
-        case EDIT_COMPRESSOR_STATION_WORKSHOPS:
+        case 5:
             if (cs.name != "None") {
                 EditCompressorStationWorkshops(cs);
             }
@@ -240,7 +236,7 @@ int main() {
             }
             break;
 
-        case SAVE_DATA: {
+        case 6: {
             ofstream fout("data.txt");
             if (fout.is_open()) {
                 SavePipe(fout, p);
@@ -249,21 +245,19 @@ int main() {
                 cout << "Data successfully saved\n\n";
             }
             else {
+
                 cout << "Error opening file for writing\n\n";
             }
             break;
         }
 
-        case LOAD_DATA: {
+        case 7: {
             ifstream fin("data.txt");
             if (fin.is_open()) {
-                if (LoadPipe(fin, p) || LoadCS(fin, cs)) {
-                    fin.close();
-                    cout << "Data successfully loaded\n\n";
-                }
-                else {
-                    cout << "Error loading data from file\n\n";
-                }
+                p = LoadPipe(fin, p);
+                cs = LoadCS(fin, cs);
+                fin.close();
+                cout << "Data successfully loaded\n\n";
             }
             else {
                 cout << "Error opening file for reading\n\n";
@@ -271,7 +265,7 @@ int main() {
             break;
         }
 
-        case EXIT:
+        case 0:
             return 0;
 
         default:
