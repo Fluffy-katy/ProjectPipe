@@ -4,7 +4,7 @@
 using namespace std;
 
  
-void ClearCinBuffer() {
+void BuffCleaner() {
     cout << "Invalid input\n";
     cin.clear();
     cin.ignore(10000, '\n');
@@ -17,11 +17,11 @@ struct Pipe {
     bool in_repair = false;
 };
 
-struct CompressorStation {
+struct CStation {
     string name = "None";
     int number_of_workshops = 0;
     int active_workshops = 0;
-    int efficiency = 0;
+    int productivity = 0;
 };
 
 void PrintMenu() {
@@ -43,22 +43,22 @@ Pipe InputPipe() {
     cin >> ws; 
     getline(cin, p.name);
 
-    cout << "Enter pipe length: ";
+    cout << "Enter length: ";
     while (!(cin >> p.length) || p.length <= 0) {
-        ClearCinBuffer();
-        cout << "Enter pipe length: ";
+        BuffCleaner();
+        cout << "Enter length: ";
     }
 
-    cout << "Enter pipe diameter: ";
+    cout << "Enter diameter: ";
     while (!(cin >> p.diameter) || p.diameter <= 0) {
-        ClearCinBuffer();
-        cout << "Enter pipe diameter: ";
+        BuffCleaner();
+        cout << "Enter diameter: ";
     }
 
-    cout << "Is the pipe under repair? (1 - Yes, 0 - No): ";
+    cout << "Pipe's repair state: (1 - working, 0 - in repair): ";
     while (!(cin >> p.in_repair)) {
-        ClearCinBuffer();
-        cout << "Is the pipe under repair? (1 - Yes, 0 - No): ";
+        BuffCleaner();
+        cout << "Pipe's repair state: (1 - working, 0 - in repair): ";
     }
     cout << "\n";
     return p;
@@ -72,13 +72,13 @@ void PrintPipeInfo(const Pipe& p) {
     cout << "\n";
 }
 
-void TogglePipeRepairState(Pipe& p) {
+void SwitchRepairState(Pipe& p) {
     p.in_repair = !p.in_repair;
     cout << "Pipe repair state successfully changed\n\n";
 }
 //CS
-CompressorStation InputCompressorStation() {
-    CompressorStation cs;
+CStation InputCStation() {
+    CStation cs;
 
     cout << "Enter compressor station name: ";
 
@@ -86,43 +86,43 @@ CompressorStation InputCompressorStation() {
 
     cout << "Enter total number of workshops: ";
     while (!(cin >> cs.number_of_workshops) || cs.number_of_workshops <= 0) {
-        ClearCinBuffer();
+        BuffCleaner();
         cout << "Enter total number of workshops: ";
     }
 
-    cout << "Enter number of operating workshops: ";
+    cout << "Enter number of active workshops: ";
     while (!(cin >> cs.active_workshops) || cs.active_workshops < 0 || cs.active_workshops > cs.number_of_workshops) {
-        ClearCinBuffer();
-        cout << "Enter number of operating workshops: ";
+        BuffCleaner();
+        cout << "Enter number of active workshops: ";
     }
 
-    cout << "Enter efficiency level (0-100): ";
-    while (!(cin >> cs.efficiency) || cs.efficiency < 0 || cs.efficiency > 100) {
-        ClearCinBuffer();
-        cout << "Enter efficiency level (0-100): ";
+    cout << "Enter productivity level (0-100%): ";
+    while (!(cin >> cs.productivity) || cs.productivity < 0 || cs.productivity > 100) {
+        BuffCleaner();
+        cout << "Enter productivity level (0-100%): ";
     }
     cout << "\n";
     return cs;
 }
 
-void PrintCompressorStationInfo(const CompressorStation& cs) {
-    cout << "Compressor station name: " << cs.name << endl;
-    cout << "Total number of workshops: " << cs.number_of_workshops << endl;
-    cout << "Operating workshops: " << cs.active_workshops << endl;
-    cout << "Efficiency: " << cs.efficiency << "%" << endl;
+void PrintCStationInfo(const CStation& cs) {
+    cout << "CS's name: " << cs.name << endl;
+    cout << "Number of workshops: " << cs.number_of_workshops << endl;
+    cout << "Active workshops: " << cs.active_workshops << endl;
+    cout << "Productivity: " << cs.productivity << "%" << endl;
     cout << "\n";
 }
 
-void EditCompressorStationWorkshops(CompressorStation& cs) {
+void EditCStationWorkshops(CStation& cs) {
     int workshopChange;
-    cout << "Enter change in operating workshops (positive or negative number): ";
-    while (!(cin >> workshopChange) || (cs.active_workshops + workshopChange) > cs.number_of_workshops
+    cout << "Enter change in operating workshops (- or +): "<< "Max: " << cs.active_workshops << endl;
+    while (!(cin >> workshopChange) || (cs.active_workshops +  workshopChange) > cs.number_of_workshops
         || (cs.active_workshops + workshopChange) < 0 || workshopChange == 0) {
-        ClearCinBuffer();
-        cout << "Enter valid change: ";
+        BuffCleaner();
+        cout << "Enter valid change: It should be less than number of ws";
     }
     cs.active_workshops += workshopChange;
-    cout << "Number of operating workshops successfully updated\n\n";
+    cout << "Number of active workshops is updated\n\n";
 }
 
 //save load
@@ -138,7 +138,7 @@ void SavePipe(ofstream& fout, const Pipe& p) {
     }
 }
 
-void SaveCS(ofstream& fout, const CompressorStation& cs) {
+void SaveCS(ofstream& fout, const CStation& cs) {
     string Marker = "CS";
     if (cs.name == "None") fout << Marker << endl;
     else
@@ -146,7 +146,7 @@ void SaveCS(ofstream& fout, const CompressorStation& cs) {
         fout << cs.name << endl;
         fout << cs.number_of_workshops << endl;
         fout << cs.active_workshops << endl;
-        fout << cs.efficiency << endl;
+        fout << cs.productivity << endl;
     }
 }
 
@@ -165,7 +165,7 @@ Pipe LoadPipe(ifstream& fin, Pipe& p) {
 
 }
 
-CompressorStation LoadCS(ifstream& fin, CompressorStation& cs) {
+CStation LoadCS(ifstream& fin, CStation& cs) {
     string Marker;
     getline(fin >> ws, Marker);
     if (Marker == "CS") return cs = { "None", 0, 0, 0 };
@@ -173,7 +173,7 @@ CompressorStation LoadCS(ifstream& fin, CompressorStation& cs) {
         cs.name = Marker;
         fin >> cs.number_of_workshops;
         fin >> cs.active_workshops;
-        fin >> cs.efficiency;
+        fin >> cs.productivity;
         return cs;
 
     }
@@ -183,24 +183,26 @@ CompressorStation LoadCS(ifstream& fin, CompressorStation& cs) {
 
 int main() {
     Pipe p;
-    CompressorStation cs;
+    CStation cs;
+
+    cout << "Hello, world!\n\n" << endl;
 
     while (true) {
         PrintMenu();
-        int selection;
-        while (!(cin >> selection)) {
-            ClearCinBuffer();
+        int digit;
+        while (!(cin >> digit)) {
+            BuffCleaner();
             PrintMenu();
         }
 
 
-        switch (selection) {
+        switch (digit) {
         case 1: 
             p = InputPipe();
             break;
 
         case 2:
-            cs = InputCompressorStation();
+            cs = InputCStation();
             break;
 
         case 3:
@@ -214,13 +216,13 @@ int main() {
                 cout << "No compressor station data available\n\n";
             }
             else {
-                PrintCompressorStationInfo(cs);
+                PrintCStationInfo(cs);
             }
             break;
 
         case 4:
             if (p.name != "None") {
-                TogglePipeRepairState(p);
+                SwitchRepairState(p);
             }
             else {
                 cout << "No pipe data available\n\n";
@@ -229,30 +231,32 @@ int main() {
 
         case 5:
             if (cs.name != "None") {
-                EditCompressorStationWorkshops(cs);
+                EditCStationWorkshops(cs);
             }
             else {
-                cout << "No compressor station data available\n\n";
+                cout << "No CS's data available\n\n";
             }
             break;
 
         case 6: {
-            ofstream fout("data.txt");
+            ofstream fout;
+            fout.open("data.txt", ios::out);
             if (fout.is_open()) {
                 SavePipe(fout, p);
                 SaveCS(fout, cs);
                 fout.close();
-                cout << "Data successfully saved\n\n";
+                cout << "Data is saved\n\n";
             }
             else {
 
-                cout << "Error opening file for writing\n\n";
+                cout << "File didn't open\n\n";
             }
             break;
         }
 
         case 7: {
-            ifstream fin("data.txt");
+            ifstream fin;
+            fin.open("data.txt", ios::in);
             if (fin.is_open()) {
                 p = LoadPipe(fin, p);
                 cs = LoadCS(fin, cs);
@@ -269,7 +273,7 @@ int main() {
             return 0;
 
         default:
-            cout << "Invalid selection\n\n";
+            cout << "Wrong selection\n\n";
             break;
         }
     }
