@@ -115,7 +115,7 @@ void PrintCStationInfo(const CStation& cs) {
 
 void EditCStationWorkshops(CStation& cs) {
     int workshopChange;
-    cout << "Enter change in operating workshops (- or +): "<< "Max: " << cs.active_workshops << endl;
+    cout << "Enter change in operating workshops (- or +): "<< "" << cs.active_workshops << endl;
     while (!(cin >> workshopChange) || (cs.active_workshops +  workshopChange) > cs.number_of_workshops
         || (cs.active_workshops + workshopChange) < 0 || workshopChange == 0) {
         BuffCleaner();
@@ -150,7 +150,8 @@ void SaveCS(ofstream& fout, const CStation& cs) {
     }
 }
 
-Pipe LoadPipe(ifstream& fin, Pipe& p) {
+Pipe LoadPipe(ifstream& fin) {
+    Pipe p;
     string Marker;
     getline(fin >> ws, Marker);
     if (Marker == "pipe") return p = { "None", 0, 0, 0 };
@@ -165,8 +166,9 @@ Pipe LoadPipe(ifstream& fin, Pipe& p) {
 
 }
 
-CStation LoadCS(ifstream& fin, CStation& cs) {
+CStation LoadCS(ifstream& fin) {
     string Marker;
+    CStation cs;
     getline(fin >> ws, Marker);
     if (Marker == "CS") return cs = { "None", 0, 0, 0 };
     else {
@@ -258,8 +260,8 @@ int main() {
             ifstream fin;
             fin.open("data.txt", ios::in);
             if (fin.is_open()) {
-                p = LoadPipe(fin, p);
-                cs = LoadCS(fin, cs);
+                p = LoadPipe(fin);
+                cs = LoadCS(fin);
                 fin.close();
                 cout << "Data successfully loaded\n\n";
             }
