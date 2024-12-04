@@ -6,12 +6,11 @@
 #include <chrono>
 
 
-
 using namespace std;
 using namespace chrono;
 
  
-// main
+// main function
 
 int main(int argc, char* argv[]) 
 {
