@@ -1,90 +1,61 @@
 #pragma once
 
-#include "Utilites.h"
+#include <unordered_map>
 #include "Pipe.h"
 #include "Station.h"
-
+#include "Connections.h"
+#include "Graph.h"
 
 class GTS
 {
-
-    std::unordered_map<int, Pipe> pipes;
-    std::unordered_map<int, Station> stations;
-
-
 public:
-
+    enum ObjectType { PIPE, STATION };
+    bool HasObject(const ObjectType obj);
+    std::unordered_set<int> GetIDs(const ObjectType obj);
     GTS();
-    //---------------Add obj-------------------
+
+    //---------------—Creating----------------
     void CreatePipe();
+    void CreateStateDiameterPipe(Pipe& pipe, int diameter);
     void CreateCS();
 
-    //---------------Show obj-------------------
-    void View();
+    //---------------Show-------------------
+    void ViewPipes();
+    void ViewStations();
 
-    template <typename Struct>
-    void ViewComponents(std::unordered_map<int, Struct>& conteiner)
-    {
-        int i = 1;
-        for (auto& element : conteiner) {
-            std::cout << i << ". ";
-            i++;
-            element.second.ShowInfo();
-        }
-    }
+    //---------------Editing-------------------
+    void EditPipes(std::unordered_set<int>& IDs);
+    void EditStations(std::unordered_set<int>& IDs);
 
-    template <typename Struct>
-    void ViewComponentsByID(std::set<int> IDs, std::unordered_map<int, Struct>& conteiner)
-    {
-        int i = 1;
-        for (auto& id : IDs) {
-            std::cout << i << ". ";
-            i++;
-            conteiner.at(id).ShowInfo();
-        }
-    }
+    void Edit_ByName(const ObjectType obj);
+    void Edit_ByParametr(const ObjectType obj);
 
+    //---------------Deliting-------------------
+    void DeletePipes(std::unordered_set<int>& IDs);
+    void DeleteStations(std::unordered_set<int>& IDs);
 
-    //--------------Search-------------------
-    void Search();
-    void SearchPipes();
-    void SearchCS();
+    void Delete_ByName(const ObjectType obj);
+    void Delete_ByParametr(const ObjectType obj);
 
-    //---------------Edd-------------------
-    void Edit();
+    //---------------Grahp-------------------
+    void ViewConnections();
+    void CreateConnection();
+    void DeleteConnection();
+    void TopologicalSort();
+    void ShortestPath();
 
-    void EditPipes();
-    void EditCS();
-
-    void EditOnePipe();
-    void EditOneCS();
-    void EditSomePipes();
-    void EditSomeCS();
-
-    template <typename Struct>
-    void EditOne(std::unordered_map<int, Struct>& structure)
-    {
-        auto keys = GetKeys(structure);
-        int number = GetCorrectNumber<int>(std::cin, 1, keys.size()) - 1;
-        structure[keys[number]].Edit();
-    }
-
-
-
-    //---------------Del-------------------
-    void Delete();
-    void DeletePipes();
-    void DeleteStations();
-
-
-    void DeletePipes(std::vector<int>& ids);
-    void DeleteStations(std::vector<int>& ids);
-
-    void DeleteSomePipes();
-    void DeleteSomeStations();
-
-    //---------------Save-Load-------------------
+    //---------------—Load-Save-------------------
     void SaveConfiguration();
     void LoadConfiguration();
 
+
+private:
+    std::unordered_map<int, Pipe> pipes;
+    std::unordered_map<int, Station> stations;
+    Connections connections;
+
+    int InputExistIdStation();
+    std::unordered_set<int> GetFreePipes(const std::unordered_set<int>& IDs);
+    std::unordered_set<int> GetEditNumbers(std::unordered_set<int>& result, const GTS::ObjectType obj);
+    void ViewObjects(std::unordered_set<int> result, const GTS::ObjectType obj);
 };

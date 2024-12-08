@@ -21,12 +21,10 @@ public:
 
     void ShowInfo();
 
-    void Edit();
-
     void Edit(int active);
 
     static int GetMaxId() { return MaxId; };
-    int GetUnactiveWorkshop() { return (1.0 - (double)active_workshops / (double)number_of_workshops) * 100.0; }
+    double GetUnactiveWorkshop() { return (1.0 - (double)active_workshops / (double)number_of_workshops) * 100.0; }
 
     int GetID() { return ID; };
 

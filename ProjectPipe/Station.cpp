@@ -1,9 +1,9 @@
-#include "Station.h"
+﻿#include "Station.h"
 
 using namespace std;
 
 
-// Construktor CS
+// CS constructor
 Station::Station() {
     name = "Non";
     number_of_workshops = 0;
@@ -12,7 +12,7 @@ Station::Station() {
     ID = ++MaxId;
 }
 
-// Construktor CS for loading
+// CS constructor loading
 Station::Station(string name, int number_of_workshops, int active_workshops, int efficianty) {
     this->name = name;
     this->number_of_workshops = number_of_workshops;
@@ -20,29 +20,29 @@ Station::Station(string name, int number_of_workshops, int active_workshops, int
     this->efficianty = efficianty;
 }
 
-// Info CS
+// Show
 void Station::WriteInfo() {
     ENTER;
 
-    cout << "Enter CS's name:" << endl;
-    name = input_string(cin);
+    cout << "Enter the name of the CS:" << endl;
+    name = input_string();
 
-    cout << "Enter number of workshops:" << endl;
-    number_of_workshops = GetCorrectNumber(cin, 0, 10);
+    cout << "Enter the number of workshops:" << endl;
+    number_of_workshops = GetCorrectNumber(0, 10);
 
-    cout << "Enter number of active workshops:" << endl;
-    active_workshops = GetCorrectNumber(cin, 0, number_of_workshops);
+    cout << "Enter the number of active workshops" << endl;
+    active_workshops = GetCorrectNumber(0, number_of_workshops);
 
-    cout << "Efficiancy level(0-100)" << endl;
-    efficianty = GetCorrectNumber(cin, 0, 100);
+    cout << "Enter the efficiency of the station (0-100)" << endl;
+    efficianty = GetCorrectNumber(0, 100);
 
 }
 
-// Print constructor CS
+// ѕросмотр информации  —
 void Station::ShowInfo() {
-
+   
     cout << "CS " << name << "; Number of workshops: " << number_of_workshops << "; Active workshops: "
-        << active_workshops << "; Efficianty: " << efficianty << "; Id: " << ID << endl;
+        << active_workshops << "; efficiency: " << efficianty << "; Id:" << ID << endl;
 }
 
 
@@ -54,16 +54,6 @@ void Station::Edit(int active) {
     }
 }
 
-
-// Constructor of CS
-void Station::Edit()
-{
-    ENTER;
-    ShowInfo();
-    cout << "Enter number of workshops:" << endl;
-    int answer = GetCorrectNumber(cin, 0, number_of_workshops);
-    Edit(answer);
-}
 
 ofstream& operator << (ofstream& file, const Station& CS) {
     if (file.is_open()) {
@@ -90,3 +80,4 @@ ifstream& operator >> (ifstream& file, Station& CS) {
     }
     return file;
 }
+

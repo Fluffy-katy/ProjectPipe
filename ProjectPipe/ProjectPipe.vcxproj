@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -183,13 +183,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Connections.cpp" />
+    <ClCompile Include="Graph.cpp" />
     <ClCompile Include="GTS.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="Station.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Connections.h" />
+    <ClInclude Include="Graph.h" />
     <ClInclude Include="GTS.h" />
+    <ClInclude Include="Menu.h" />
     <ClInclude Include="Pipe.h" />
     <ClInclude Include="Station.h" />
     <ClInclude Include="Utilites.h" />

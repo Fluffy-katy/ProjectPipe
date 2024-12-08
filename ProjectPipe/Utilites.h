@@ -4,18 +4,9 @@
 #include <string> 
 #include <vector>
 #include <unordered_map>
-#include <map>
-#include <set>
-#include <algorithm>
-
-#include <Windows.h> // clear
-#include <conio.h>
-#include <sstream>
-#include <filesystem>
-#include <format>
+#include <unordered_set>
 
 #define ENTER std::cout << std::endl << std::endl;
-
 
 // Wrapper for cerr
 template <typename Stream>
@@ -38,11 +29,10 @@ public:
     }
 };
 
-
-inline std::string input_string(std::istream& in)
+inline std::string input_string()
 {
-    in.ignore(1000000, '\n');
-    in >> std::ws;
+    std::cin.ignore(1000000, '\n');
+    std::cin >> std::ws;
     std::string str;
     std::getline(std::cin, str);
 
@@ -50,19 +40,18 @@ inline std::string input_string(std::istream& in)
     return str;
 }
 
-
-
 // Function to check the value
+
 template <typename T>
-T GetCorrectNumber(std::istream& in, T min, T max)
+T GetCorrectNumber(T min, T max)
 {
     T x;
-    while ((in >> x).fail()
-        || in.peek() != '\n'
+    while ((std::cin >> x).fail()
+        || std::cin.peek() != '\n'
         || x < min || x > max)
     {
-        in.clear();
-        in.ignore(10000, '\n');
+        std::cin.clear();
+        std::cin.ignore(10000, '\n');
         std::cout << "\nInvalid input!" << std::endl;
         std::cout << "Enter a number between " << min << " and " << max << std::endl;
     }
@@ -70,31 +59,23 @@ T GetCorrectNumber(std::istream& in, T min, T max)
     return x;
 }
 
-
-
-// Used for convenience in console selection
-template <typename T>
-std::vector<int> GetKeys(const std::unordered_map<int, T>& container)
+inline int SwitchNumber(std::vector<int>& conteiner)
 {
-    std::vector<int> keys;
-    keys.reserve(container.size());
-    int i = 0;
-    for (auto& [id, element] : container)
-        keys.push_back(id);
-    return keys;
+    for (int i = 0; i < conteiner.size(); i++)
+    {
+        std::cout << i + 1 << ". " << conteiner[i] << std::endl;
+    }
+    int answer = GetCorrectNumber(1, (int)conteiner.size());
+    return conteiner[answer - 1];
 }
 
 
-//---------------Function selection-------------------
-using Function = void(*)();
-
-inline void Switch(std::vector<Function> functions)
+// Used for convenient selection in console
+template <typename T>
+std::unordered_set<int> GetKeys(const std::unordered_map<int, T>& container)
 {
-    int size = functions.size();
-    int answer = GetCorrectNumber(std::cin, 0, size);
-    if (answer)
-    {
-        functions[answer - 1]();
-    }
-    return;
+    std::unordered_set<int> keys;
+    for (auto& [id, element] : container)
+        keys.insert(id);
+    return keys;
 }

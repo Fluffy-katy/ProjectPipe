@@ -1,10 +1,13 @@
-#include "Pipe.h"
+﻿#include "Pipe.h"
 
 using namespace std;
 
 int Pipe::MaxId = 0;
 
-// Constructor pipe
+vector<int> Pipe::possible_diameters = { 500, 700, 1000, 1400 };
+
+
+//  Constructor pipe
 Pipe::Pipe()
 {
     name = "Non";
@@ -14,7 +17,7 @@ Pipe::Pipe()
     ID = ++MaxId;
 }
 
-// Constructor loading pipe
+//  Constructor loading pipe
 Pipe::Pipe(string name, float length, int diameter, bool in_repair) {
     this->name = name;
     this->length = length;
@@ -22,51 +25,59 @@ Pipe::Pipe(string name, float length, int diameter, bool in_repair) {
     this->in_repair = in_repair;
 }
 
-// Show Info pipe
+// Write Info pipe
 void Pipe::WriteInfo() {
     ENTER;
     cout << "Enter pipe's name:" << endl;
-    name = input_string(cin);
+    name = input_string();
 
 
     cout << "Enter pipe's lenth(m):" << endl;
-    length = GetCorrectNumber(cin, 1.0, 100000000.);
+    length = GetCorrectNumber(1.0, 100000000.);
 
     cout << "Enter pipe's diameter(m):" << endl;
-    diameter = GetCorrectNumber(cin, 100, 1400);
+    diameter = SwitchNumber(possible_diameters);
 
     cout << "Enter pipe's state:(0 - in repair; 1 - working)" << endl;
-    if (cin, GetCorrectNumber(cin, 0, 1)) {
-        in_repair = true;
-    }
-    else {
-        in_repair = false;
-    }
+
+    if (GetCorrectNumber(0, 1)) { in_repair = true; }
+    else { in_repair = false; }
 }
 
-// info
-void Pipe::ShowInfo() {
-    string sostoyanie = in_repair ? " working " : " in repair";
-    cout << "Pipe " << name << "; Lenght: " << length << "; Diameter: " << diameter
-        << "; State:" << sostoyanie << "; Id: " << ID << endl;
-}
-
-
-void Pipe::Edit(int status) {
-    if (status) in_repair = !in_repair;
-}
-
-
-void Pipe::Edit()
-{
+void Pipe::WriteInfo_WithStateDiameter(int diameter) {
     ENTER;
-    ShowInfo();
-    cout << "Change state of pipe?(0 - no, 1 - yes)" << endl;
-    Edit(GetCorrectNumber(cin, 0, 1));
+    cout << "Enter pipe's name:" << endl;
+    name = input_string();
+
+
+    cout << "Enter pipe's lenth(m):" << endl;
+    length = GetCorrectNumber(1.0, 100000000.);
+
+    this->diameter = diameter;
+
+    cout << "Enter pipe's state:(0 - in repair; 1 - working)" << endl;
+
+    if (GetCorrectNumber(0, 1)) { in_repair = true; }
+    else { in_repair = false; }
+}
+
+// Show info
+void Pipe::ShowInfo() {
+    string status = in_repair ? " working " : " in repair";
+    cout << "Pipe " << name << "; length: " << length << "; diameter: " << diameter
+        << "; Status:" << status << "; Id: " << ID << endl;
 }
 
 
 
+void Pipe::Edit(const Action act) {
+    switch (act) {
+    case SET_WORK: { in_repair = true; return; }
+    case SET_REPAIR: { in_repair = false; return; }
+    case SET_OPPOSITE: { in_repair = !in_repair; return; }
+    default: { return; }
+    }
+}
 
 ofstream& operator << (ofstream& file, const Pipe& pipe) {
     if (file.is_open()) {
@@ -78,6 +89,7 @@ ofstream& operator << (ofstream& file, const Pipe& pipe) {
     }
     return file;
 }
+
 
 ifstream& operator >> (ifstream& file, Pipe& pipe) {
     if (file.is_open()) {
