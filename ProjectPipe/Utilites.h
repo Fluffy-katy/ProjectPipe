@@ -1,14 +1,16 @@
 #pragma once
-#include <iostream> // Input-output stream
-#include <fstream> // File stream
+#include <iostream>
+#include <fstream>
 #include <string> 
 #include <vector>
-#include <unordered_map>
 #include <unordered_set>
+#include <unordered_map>
+
 
 #define ENTER std::cout << std::endl << std::endl;
 
-// Wrapper for cerr
+
+//cerr
 template <typename Stream>
 class redirect_stream_wrapper
 {
@@ -29,6 +31,7 @@ public:
     }
 };
 
+
 inline std::string input_string()
 {
     std::cin.ignore(1000000, '\n');
@@ -40,8 +43,9 @@ inline std::string input_string()
     return str;
 }
 
-// Function to check the value
 
+
+//check
 template <typename T>
 T GetCorrectNumber(T min, T max)
 {
@@ -53,11 +57,12 @@ T GetCorrectNumber(T min, T max)
         std::cin.clear();
         std::cin.ignore(10000, '\n');
         std::cout << "\nInvalid input!" << std::endl;
-        std::cout << "Enter a number between " << min << " and " << max << std::endl;
+        std::cout << "Enter a number from " << min << " to " << max << std::endl;
     }
     std::cerr << x << std::endl;
     return x;
 }
+
 
 inline int SwitchNumber(std::vector<int>& conteiner)
 {
@@ -70,7 +75,7 @@ inline int SwitchNumber(std::vector<int>& conteiner)
 }
 
 
-// Used for convenient selection in console
+// free of choice
 template <typename T>
 std::unordered_set<int> GetKeys(const std::unordered_map<int, T>& container)
 {

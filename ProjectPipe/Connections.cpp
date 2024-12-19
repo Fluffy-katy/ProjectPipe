@@ -4,17 +4,20 @@ using namespace std;
 
 bool Connections::Empty()
 {
-    if (edges.size()) { return true; }
-    else { return false; }
+    if (edges.size()) { return false; }
+    else { return true; }
+}
+
+void Connections::Insert(Edge& edge) {
+    edges.insert({ edge.pipe, edge });
+    nodes.insert({ edge.from });
+    nodes.insert({ edge.to });
 }
 
 bool Connections::UncorrectNodes(int from, int to)
 {
-    if (nodes.contains(from) && nodes.contains(to)) {
-        cout << "Stations are already in use!" << endl; return true;
-    }
-    else if (from == to) {
-        cout << "Cannot create a connection to the same station!" << endl; return true;
+    if (from == to) {
+        cout << "It's not possible connect the same station!" << endl; return true;
     }
     else { return false; }
 }
@@ -22,7 +25,7 @@ bool Connections::UncorrectNodes(int from, int to)
 void Connections::CreateConnection(int from, int to, int id) {
     if (UncorrectNodes(from, to)) { return; }
     if (edges.contains(id)) {
-        cout << "Stations or pipe are already in use!" << endl; return;
+        cout << "The station or pipe is already in use!" << endl; return;
     }
     Edge edge = Edge(from, to, id);
     edges.insert({ id, edge });
@@ -41,13 +44,25 @@ void Connections::ViewConnections()
     }
 }
 
-void Connections::DeleteConnection(int id) {
-    if (edges.contains(id)) {
-        Edge edge = edges.at(id);
+void Connections::DeleteConnection_ByPipeID(int pipe_id) {
+    if (edges.contains(pipe_id)) {
+        edges.erase(pipe_id);
+        cout << "Connection " << pipe_id << " delited\n";
         ResetNodes();
-        edges.erase(id);
-        cout << endl << "Connection deleted!" << endl;
     }
+}
+
+void Connections::DeleteConnection_ByStationID(int station_id) {
+    vector<int> ID_edges;
+    for (auto& [pipe_id, edge] : edges) {
+        if (edge.from == station_id || edge.to == station_id) { ID_edges.push_back(pipe_id); }
+    }
+
+    for (int id : ID_edges) {
+        edges.erase(id);
+        cout << "Connection " << id << " delited\n";
+    }
+    ResetNodes();
 }
 
 void Connections::ResetNodes()

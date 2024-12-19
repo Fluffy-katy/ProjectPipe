@@ -9,7 +9,7 @@
 using namespace std;
 
 
-//---------------Filter-------------------
+//---------------–еализаци€ фильтра-------------------
 
 template <typename T1, typename T2>
 using Filter = bool(*)(T1& element, T2 parametr);
@@ -19,8 +19,8 @@ bool CheckByName(T& element, string name) {
     return (element.name.find(name) != string::npos);
 }
 
-bool CheckByStatus(Pipe& pipe, bool in_repair) {
-    return pipe.in_repair == in_repair;
+bool CheckByStatus(Pipe& pipe, bool in_work) {
+    return pipe.in_work == in_work;
 }
 
 bool CheckByDiameter(Pipe& pipe, int diameter) {
@@ -44,7 +44,7 @@ unordered_set<int> Find_By_Filter(unordered_map<int, Element>& elements, Filter<
 }
 
 
-//---------------Utils-------------------
+//---------------”тилиты-------------------
 
 GTS::GTS() {}
 
@@ -115,7 +115,7 @@ unordered_set<int> GTS::GetFreePipes(const unordered_set<int>& IDs) {
 }
 
 
-//---------------Creating-------------------
+//---------------Creatong objects-------------------
 void GTS::CreatePipe() {
     Pipe pipe;
     pipe.WriteInfo();
@@ -166,7 +166,7 @@ void GTS::ViewObjects(unordered_set<int> result, const GTS::ObjectType obj)
 }
 
 
-//---------------Editing-------------------
+//---------------Edit-------------------
 void GTS::EditPipes(unordered_set<int>& IDs)
 {
     ENTER;
@@ -203,7 +203,7 @@ void GTS::Edit_ByName(const ObjectType obj)
         if (result.size())
         {
             ViewObjects(result, PIPE);
-            cout << "Edit all (0) or Enter specific IDs (Enter IDs one by one, and enter 0 to finish selection)" << endl;
+            cout << "Edit all(0) or Enter specific IDs(Enter IDs one by one, and enter 0 to finish selection)" << endl;
             unordered_set<int> numbers = GetEditNumbers(result, PIPE);
             EditPipes(numbers);
         }
@@ -264,14 +264,21 @@ void GTS::Edit_ByParametr(const ObjectType obj) {
     }
 }
 
-//---------------Deleting-------------------
+//---------------Deliting-------------------
 void GTS::DeletePipes(unordered_set<int>& IDs) {
-    for (auto& id : IDs) pipes.erase(id);
-    cout << endl << "Pipes have been deleted!" << endl;
+
+    for (auto& pipe_id : IDs) {
+        connections.DeleteConnection_ByPipeID(pipe_id);
+        pipes.erase(pipe_id);
+    }
+    cout << endl << "“рубы удалены!" << endl;
 }
 void GTS::DeleteStations(unordered_set<int>& IDs) {
-    for (auto& id : IDs) stations.erase(id);
-    cout << endl << "Stations have been deleted!" << endl;
+    for (auto& station_id : IDs) {
+        connections.DeleteConnection_ByStationID(station_id);
+        stations.erase(station_id);
+    }
+    cout << endl << "Pipes have been deleted!" << endl;
 }
 
 void GTS::Delete_ByName(const ObjectType obj)
@@ -279,7 +286,7 @@ void GTS::Delete_ByName(const ObjectType obj)
     switch (obj) {
     case PIPE: {
         ENTER;
-        cout << "Enter the name of the pipe : " << endl;
+        cout << "Enter the name of the pipe : "  << endl;
         string name = input_string();
         unordered_set<int> result = Find_By_Filter<Pipe, string>(pipes, CheckByName, name);
         if (result.size())
@@ -295,7 +302,6 @@ void GTS::Delete_ByName(const ObjectType obj)
     case STATION: {
         ENTER;
         cout << "Enter the name of the station:" << endl;
-
         string name = input_string();
         unordered_set<int> result = Find_By_Filter<Station, string>(stations, CheckByName, name);
         if (result.size())
@@ -348,7 +354,6 @@ void GTS::Delete_ByParametr(const ObjectType obj) {
 }
 
 //---------------Graph-------------------
-
 void GTS::ViewConnections() {
     ENTER;
     connections.ViewConnections();
@@ -395,7 +400,11 @@ void GTS::CreateConnection() {
 }
 
 void GTS::DeleteConnection() {
-    if (connections.Empty()) { cout << "No available connections!"; return;}
+    if (connections.Empty()) {
+        cout << "No available connectoins!";
+        return;
+    }
+
     connections.ViewConnections();
     cout << "Enter the ID of the connection to be removed:" << endl;
     int id;
@@ -403,41 +412,61 @@ void GTS::DeleteConnection() {
         id = GetCorrectNumber(MIN_ID_PIPE, Pipe::GetMaxId());
         if (!connections.edges.contains(id)) { cout << "There is no such ID among the found pipes! Please enter it again." << endl;}
     } while (!connections.edges.contains(id));
-    connections.DeleteConnection(id);
+    connections.DeleteConnection_ByPipeID(id);
 }
 
+
 void GTS::TopologicalSort() {
+    if (connections.Empty()) { cout << "No available connectoins!"; return; }
     Graph graph = Graph(connections.edges, connections.nodes, pipes);
     vector<int> result = graph.TopologicalSort();
-    if (!result.size()) { cout << "Topological sorting: "; return; }
-    cout << "Topological sorting: ";
+    if (!result.size()) { cout << "Topological sorting : "; return; }
+    cout << "Topological sorting :  ";
     for (auto& i : result) {
         cout << i << " ";
     }
 }
 
-
 void GTS::ShortestPath() {
+    if (connections.Empty()) { cout << "No available connectoins!"; return; }
     Graph graph = Graph(connections.edges, connections.nodes, pipes);
-    cout << "Enter the starting vertex of the path:" << endl;
+
+    connections.ViewConnections();
+    cout << "Enter the start vertex of the way: " << endl;
     int StartNode = GetCorrectNumber(MIN_ID_STATION, Station::GetMaxId());
 
-    cout << "Enter the ending vertex of the path:" << endl;
+    cout << "Enter the end vertex of the way:" << endl;
     int EndNode = GetCorrectNumber(MIN_ID_STATION, Station::GetMaxId());
 
     vector<int> result = graph.Metod_Deikstra(StartNode, EndNode);
-    if (!result.size()) { cout << "Result: - "; return; }
-    cout << "Result: ";
+    if (!result.size()) { cout << "Way: "; return; }
+    cout << "Way: ";
     for (auto& i : result) {
         cout << i << " -> ";
     }
     cout << "end" << endl;
+    cout << "length of the way: " << graph.Lenght_ShortestPath(result) << endl;
 }
-//---------------—--Save/Load-----------------
+
+void GTS::MaxFlow() {
+    if (connections.Empty()) { cout << "No available connectoins!"; return; }
+    Graph graph = Graph(connections.edges, connections.nodes, pipes);
+
+    connections.ViewConnections();
+    cout << "Enter the start vertex of the flow:" << endl;
+    int StartNode = GetCorrectNumber(MIN_ID_STATION, Station::GetMaxId());
+
+    cout << "Enter the end vertex of the flow:" << endl;
+    int EndNode = GetCorrectNumber(MIN_ID_STATION, Station::GetMaxId());
+
+    double result = graph.Ford_Fulkerson(StartNode, EndNode);
+    cout << "Maximum flow: " << result << endl;
+}
+//---------------Save/Load-------------------
 void GTS::SaveConfiguration()
 {
     if (HasObject(PIPE) or HasObject(STATION)) {
-        cout << "Enter name of the file :" << endl;
+        cout << "Enter name of the file:" << endl;
         string name = input_string();
         name = "Saves/" + name + ".txt";
 
@@ -449,9 +478,9 @@ void GTS::SaveConfiguration()
         file << connections;
         file.close();
         ENTER;
-        cout << "Saved succesfully!" << endl;
+        cout << "Saved successfully" << endl;
     }
-    else { ENTER; cout << "The storage cannot be empty, please enter the data!" << endl;}
+    else { ENTER; cout << "Saving can not be empty, please enter data" << endl; }
 }
 
 void GTS::LoadConfiguration() {
@@ -463,7 +492,7 @@ void GTS::LoadConfiguration() {
     for (auto& name : filesystem::directory_iterator(path)) {
         count++;
         names.push_back(name);
-        cout << count << ". " << name << endl;
+        cout << count << ". " << name.path().filename() << endl;
     }
 
     ENTER;
@@ -478,7 +507,7 @@ void GTS::LoadConfiguration() {
     Edge edge;
     int count_pipes, count_cs, count_connectios;
 
-    file.open(names[save-1]);
+    file.open(names[save - 1]);
     file >> count_pipes >> count_cs >> count_connectios;
 
     while (count_pipes--)
@@ -494,11 +523,9 @@ void GTS::LoadConfiguration() {
     while (count_connectios--)
     {
         file >> edge;
-        connections.edges.insert({ edge.pipe, edge });
-        connections.nodes.insert({ edge.from });
-        connections.nodes.insert({ edge.to });
+        connections.Insert(edge);
     }
 
-    cout << "Files loaded!\n" << endl;
+    cout << "Have been loaded!\n" << endl;
     file.close();
 }

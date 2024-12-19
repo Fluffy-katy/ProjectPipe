@@ -12,11 +12,11 @@ class Pipe
 public:
 
     std::string name;
-    bool in_repair;
+    bool in_work;
     enum Action { SET_WORK, SET_REPAIR, SET_OPPOSITE };
 
     Pipe();
-    Pipe(const std::string name, const float length, const int diameter, const bool in_repair);
+    Pipe(const std::string name, const float length, const int diameter, const bool in_work);
 
     void WriteInfo();
 
@@ -28,7 +28,10 @@ public:
 
     static inline std::vector<int> GetSizes() { return possible_diameters; };
     int GetDiameter() const { return diameter; };
-    double GetLenght()  const { return length; };
+
+    double GetLenght() const { return in_work ? length : DBL_MAX; };
+
+    double GetCapacity() const;
     static int GetMaxId() { return MaxId; };
     int GetID() const { return ID; };
 

@@ -232,7 +232,7 @@ void Delete_Stations(GTS& GasSystem)
 
     switch (GetCorrectNumber(0, 2))
     {
-    case 1: { DeleteOnePipe(GasSystem); break; }
+    case 1: { DeleteOneStation(GasSystem); break; }
     case 2: {
         cout << "Select a filter for search:" <<
             "\n1. By name" <<
@@ -274,14 +274,16 @@ void Graph_Menu(GTS& GasSystem) {
         "3. Delete connection\n" <<
         "4. Topological sort\n" <<
         "5. Find shortest way\n" <<
+        "6. Find max flow\n" <<
         "0. Exit\n" << endl;
 
-    switch (GetCorrectNumber(0, 5)) {
+    switch (GetCorrectNumber(0, 6)) {
     case 1: { GasSystem.ViewConnections(); break; }
     case 2: { GasSystem.CreateConnection(); break; }
     case 3: { GasSystem.DeleteConnection(); break; }
     case 4: { GasSystem.TopologicalSort(); break; }
     case 5: { GasSystem.ShortestPath(); break; }
+    case 6: { GasSystem.MaxFlow(); break; }
     case 0: { return; }
     }
 }

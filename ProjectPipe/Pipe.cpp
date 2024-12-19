@@ -1,4 +1,5 @@
 ﻿#include "Pipe.h"
+#include <math.h>
 
 using namespace std;
 
@@ -13,16 +14,17 @@ Pipe::Pipe()
     name = "Non";
     length = 0.0;
     diameter = 0;
-    in_repair = 0;
+    //in_repair = 0;
+    in_work = 0;
     ID = ++MaxId;
 }
 
 //  Constructor loading pipe
-Pipe::Pipe(string name, float length, int diameter, bool in_repair) {
+Pipe::Pipe(string name, float length, int diameter, bool in_work) {
     this->name = name;
     this->length = length;
     this->diameter = diameter;
-    this->in_repair = in_repair;
+    this->in_work = in_work;
 }
 
 // Write Info pipe
@@ -40,8 +42,8 @@ void Pipe::WriteInfo() {
 
     cout << "Enter pipe's state:(0 - in repair; 1 - working)" << endl;
 
-    if (GetCorrectNumber(0, 1)) { in_repair = true; }
-    else { in_repair = false; }
+    if (GetCorrectNumber(0, 1)) { in_work = true; }
+    else { in_work = false; }
 }
 
 void Pipe::WriteInfo_WithStateDiameter(int diameter) {
@@ -57,13 +59,13 @@ void Pipe::WriteInfo_WithStateDiameter(int diameter) {
 
     cout << "Enter pipe's state:(0 - in repair; 1 - working)" << endl;
 
-    if (GetCorrectNumber(0, 1)) { in_repair = true; }
-    else { in_repair = false; }
+    if (GetCorrectNumber(0, 1)) { in_work = true; }
+    else { in_work = false; }
 }
 
 // Show info
 void Pipe::ShowInfo() {
-    string status = in_repair ? " working " : " in repair";
+    string status = in_work ? " working " : " in repair";
     cout << "Pipe " << name << "; length: " << length << "; diameter: " << diameter
         << "; Status:" << status << "; Id: " << ID << endl;
 }
@@ -72,11 +74,16 @@ void Pipe::ShowInfo() {
 
 void Pipe::Edit(const Action act) {
     switch (act) {
-    case SET_WORK: { in_repair = true; return; }
-    case SET_REPAIR: { in_repair = false; return; }
-    case SET_OPPOSITE: { in_repair = !in_repair; return; }
+    case SET_WORK: { in_work = true; return; }
+    case SET_REPAIR: { in_work = false; return; }
+    case SET_OPPOSITE: { in_work = !in_work; return; }
     default: { return; }
     }
+}
+
+double Pipe::GetCapacity() const {
+    double capacity = sqrt(pow(diameter, 5) / length);
+    return in_work ? capacity : -DBL_MAX;
 }
 
 ofstream& operator << (ofstream& file, const Pipe& pipe) {
@@ -84,11 +91,12 @@ ofstream& operator << (ofstream& file, const Pipe& pipe) {
         file << pipe.name << endl;
         file << pipe.length << endl;
         file << pipe.diameter << endl;
-        file << pipe.in_repair << endl;
+        file << pipe.in_work << endl;
         file << pipe.ID << endl;
     }
     return file;
 }
+
 
 
 ifstream& operator >> (ifstream& file, Pipe& pipe) {
@@ -97,7 +105,7 @@ ifstream& operator >> (ifstream& file, Pipe& pipe) {
         getline(file, pipe.name);
         file >> pipe.length;
         file >> pipe.diameter;
-        file >> pipe.in_repair;
+        file >> pipe.in_work;
         file >> pipe.ID;
         Pipe::MaxId = (Pipe::MaxId < pipe.ID) ? pipe.ID : Pipe::MaxId;
     }

@@ -15,11 +15,15 @@ public:
 
     bool UncorrectNodes(int from, int to);
 
+    void Insert(Edge& edge);
+
     void CreateConnection(int from, int to, int id);
 
     void ViewConnections();
 
-    void DeleteConnection(int id);
+    void DeleteConnection_ByPipeID(int id);
+
+    void DeleteConnection_ByStationID(int id);
 
     friend std::ofstream& operator << (std::ofstream& file, const Connections& connections);
 private:

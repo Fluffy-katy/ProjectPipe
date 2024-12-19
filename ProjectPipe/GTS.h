@@ -1,5 +1,4 @@
 #pragma once
-
 #include <unordered_map>
 #include "Pipe.h"
 #include "Station.h"
@@ -14,16 +13,16 @@ public:
     std::unordered_set<int> GetIDs(const ObjectType obj);
     GTS();
 
-    //---------------—Creating----------------
+    //---------------—Creating objects----------------
     void CreatePipe();
     void CreateStateDiameterPipe(Pipe& pipe, int diameter);
     void CreateCS();
 
-    //---------------Show-------------------
+    //---------------Show objects-------------------
     void ViewPipes();
     void ViewStations();
 
-    //---------------Editing-------------------
+    //---------------Edit-------------------
     void EditPipes(std::unordered_set<int>& IDs);
     void EditStations(std::unordered_set<int>& IDs);
 
@@ -37,14 +36,15 @@ public:
     void Delete_ByName(const ObjectType obj);
     void Delete_ByParametr(const ObjectType obj);
 
-    //---------------Grahp-------------------
+    //---------------Graph-------------------
     void ViewConnections();
     void CreateConnection();
     void DeleteConnection();
     void TopologicalSort();
     void ShortestPath();
+    void MaxFlow();
 
-    //---------------—Load-Save-------------------
+    //---------------Save/Load-------------------
     void SaveConfiguration();
     void LoadConfiguration();
 
